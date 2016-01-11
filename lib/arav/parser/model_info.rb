@@ -12,12 +12,15 @@ module Arav
         return unless class_declaration?
 
         {
-          name: name,
-          parent: extract_parentname
+          model_info: {
+            name: name,
+            parent: extract_parentname
+          }
         }
       end
 
       private
+
       def name
         (module_nesting + [extract_classname]).join("::") 
       end

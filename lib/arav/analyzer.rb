@@ -7,21 +7,47 @@ module Arav
     end
 
     def analyze
-      output = {lines_code: filelines.count}
-      filelines.each_with_index do |line, index|
-        output = analyze_line(output, line, index)
-      end
-      output 
+      model_info = extract_model_info
+      return unless model_info
+
+      output = {
+        lines_code: filelines.count,
+        model_info: model_info,
+        has_one: has_one,
+        has_many: has_many,
+        belongs_to: belongs_to
+      }
     end
 
     private
+    def belongs_to
+      Arav::Parser::BelongsTo.new(filelines).extract
+    end
 
-    def analyze_line(output, line, index)
-      model_attributes.map do |attr|
-        extracted_data = extract(name, index)
-        output.merge(extracted_data) if extracted_data
+    def has_many
+      Arav::Parser::HasMany.new(filelines).extract
+    end
+
+    def has_one
+      Arav::Parser::HasOne.new(filelines).extract
+    end
+
+    def extract_model_info
+      # every file in app/models should only define one active record model
+      # if more than one active record model is defined (bad Rails practice),
+      # it returns the first one defined in the file
+      
+      filelines.each_with_index do |line, index|
+        prior_lines = (index == 0) ? [] : filelines[0..(index-1)]
+        if model_info = Arav::Parser::ModelInfo.new(line, prior_lines).extract
+          return model_info
+        end
       end
-      output
+
+      # If no active record model is defined in the file, nil is returned
+      # Again, this is bad Rails practice, there shouldn't be a file in
+      # app/models that isn't an active record definition
+      nil
     end
 
 #    {
@@ -30,20 +56,6 @@ module Arav
 #      has_many: ["Pets"],
 #      belongs_to: ["Accounts"]
 #    }
-
-    def extract(name, index)
-      if index == 0
-        prior_lines = []
-      else
-        prior_lines = filelines[0..(index-1)]
-      end
-
-      { "#{name}": Arav::Parser.const_get(camel_case(name)).new(line, prior_lines).extract }
-    end
-
-    def camel_case(symbol)
-      symbol.to_s.split('_').collect(&:capitalize).join 
-    end
 
     def model_attributes
       [:model_info, :has_one, :has_many, :belongs_to] 

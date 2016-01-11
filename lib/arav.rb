@@ -8,9 +8,15 @@ module Arav
   autoload :ArModel, "arav/ar_model"
   autoload :Analyzer, "arav/analyzer"
 
+  autoload :Helper, "arav/helper.rb"
+
   module Parser
+    autoload :AssocBase, "arav/parser/assoc_base"
     autoload :ModelInfo, "arav/parser/model_info"
     autoload :ModuleNesting, "arav/parser/module_nesting"
+    autoload :HasOne, "arav/parser/has_one"
+    autoload :HasMany, "arav/parser/has_many"
+    autoload :BelongsTo, "arav/parser/belongs_to"
   end
 end
 

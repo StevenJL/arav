@@ -24,17 +24,6 @@ Or install it yourself as:
 
 This will generate an arav.html showing your active record associations as a directed graph using d3.js.
 
-#### Please Use Sane ActiveRecord/Ruby Conventions
-
-`arav` assumes your ActiveRecord project follows sane Ruby/Rails conventions. Namely, each file in `app/models/**/*` defines only one activerecord model.  So don't
-define two active record models `User` and `Accounts` in a single file called `app/models/user_and_accounts.rb`. Don't define your classes in single lines like this: 
-
-```
-class User < ActiveRecord; def greet; puts "Hi"; end; end
-```
-
-There are countless other ways you can break the `arav` parser, but if you use sane Ruby/Rails conventions, it should work.
-
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
